@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Delete</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+  <app-root></app-root>
+  <a href="https://rcdsb-matt-beres.github.io/Chart-Website/" class="back">← Back</a>
+
+  <h1>Delete Event</h1>
+
+  <div class="grid">
+
+    <select id="events">
+
+    </select>
+
+  </div>
+
+
+  <button id="authorize_button" onclick="handleAuthClick()">Submit</button>
+
+
+
+
+  <pre id="content" style="white-space: pre-wrap;"></pre>
+
+  <script type="text/javascript">
+    /* exported gapiLoaded */
+    /* exported gisLoaded */
+    /* exported handleAuthClick */
+    /* exported handleSignoutClick */
+
+    // TODO(developer): Set to client ID and API key from the Developer Console
+    const CLIENT_ID = '867495649327-osufd5ti5dnkjan5ea7krse983r776t3.apps.googleusercontent.com';
+    const API_KEY = 'AIzaSyDi7hRaUZ5OdAyVQdwRdxf-EJro2igCp2Q';
+
+    // Discovery doc URL for APIs used by the quickstart
+    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+
+    let tokenClient;
+    let gapiInited = false;
+    let gisInited = false;
+
+    /**
+     * Callback after api.js is loaded.
+     */
+    function gapiLoaded() {
+      gapi.load('client', initializeGapiClient);
+    }
+
+    /**
+     * Callback after the API client is loaded. Loads the
+     * discovery doc to initialize the API.
+     */
+    async function initializeGapiClient() {
+      await gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: [DISCOVERY_DOC],
+      });
+      gapiInited = true;
+      maybeEnableButtons();
+      getEvents();
+    }
+
+    /**
+     * Callback after Google Identity Services are loaded.
+     */
+    function gisLoaded() {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: '', // defined later
+      });
+      gisInited = true;
+      maybeEnableButtons();
+    }
+
+    /**
+     * Enables user interaction after all libraries are loaded.
+     */
+    function maybeEnableButtons() {
+      if (gapiInited && gisInited) {
+        document.getElementById('authorize_button').style.visibility = 'visible';
+      }
+    }
+
+    /**
+     *  Sign in the user upon button click.
+     */
+    function handleAuthClick() {
+      tokenClient.callback = async (resp) => {
+        if (resp.error !== undefined) {
+          throw (resp);
+        }
+        deleteEvent();
+      };
+
+      if (gapi.client.getToken() === null) {
+        // Prompt the user to select a Google Account and ask for consent to share their data
+        // when establishing a new session.
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+      } else {
+        // Skip display of account chooser and consent dialog for an existing session.
+        tokenClient.requestAccessToken({ prompt: '' });
+      }
+    }
+
+
+
+    function deleteEvent() {
+      const request = gapi.client.calendar.events.delete({
+        calendarId: 'c_f049b179cd81305d0df146197f30755153a65542312c9c86ad719559138b61c6@group.calendar.google.com',
+        eventId: document.getElementById("events").value,
+      })
+      request.execute(function (event) {
+        console.log('Event deleted: ' + document.getElementById("events").value);
+      });
+    };
+
+  </script>
+  <script>
+    // Call the function after the DOM is fully loaded
+
+    document.addEventListener('DOMContentLoaded', () => {
+      getSeason();
+    });
+
+
+    checkDate = new Date();
+    currMonth = checkDate.getMonth() + 1;
+
+    function getSeason() {
+      const body = document.body;
+
+      // Remove any existing season class
+      body.classList.remove('winter', 'spring', 'summer', 'fall');
+      // Determine the current season and set it as the class of the body
+      if (this.currMonth == 12 || this.currMonth <= 2) {
+        body.classList.add('winter');
+      } else if (this.currMonth >= 3 && this.currMonth <= 5) {
+        body.classList.add('spring');
+      } else if (this.currMonth >= 6 && this.currMonth <= 8) {
+        body.classList.add('summer');
+      } else if (this.currMonth >= 9 && this.currMonth <= 11) {
+        body.classList.add('fall');
+      }
+    }
+
+    function getEvents() {
+      today = new Date();
+      currMonth = today.getMonth() + 1;
+      start = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T00:00:00-04:00'
+      end = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T23:59:00-04:00'
+
+
+      const request = gapi.client.calendar.events.list({
+        calendarId: 'c_f049b179cd81305d0df146197f30755153a65542312c9c86ad719559138b61c6@group.calendar.google.com',
+        singleEvents: true,
+        orderBy: "startTime",
+        timeMin: start,
+        timeMax: end
+      })
+      request.execute(function (event) {
+        const eventsSelect = document.getElementById('events');
+        eventsSelect.innerHTML = ''; // Clear existing options
+
+        if (event.items && event.items.length > 0) {
+          event.items.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item.id; // Use the event ID as the value
+            option.textContent = item.summary || 'No Title'; // Use the event summary or a fallback
+            eventsSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement('option');
+          option.textContent = 'No events found';
+          eventsSelect.appendChild(option);
+        }
+      });
+
+    }
+  </script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+  <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+</body>
+
+</html>

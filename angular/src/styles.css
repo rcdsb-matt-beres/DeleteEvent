@@ -1,0 +1,72 @@
+html,
+body {
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    font-family: Roboto, Arial, sans-serif;
+    text-align: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    overflow: hidden;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 32pt;
+}
+
+select {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    box-sizing: border-box;
+    font-size: 12pt;
+}
+
+.grid {
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+select {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    box-sizing: border-box;
+    font-size: 12pt;
+}
+
+button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    width: 100px;
+    height: 25px;
+    font-size: 12pt;
+}
+
+.back {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    margin: 0px;
+    font-size: 14pt;
+}
+
+.spring {
+    background-image: url("../public/spring.webp");
+}
+
+.summer {
+    background-image: url("../public/summer.jpg");
+}
+
+.fall {
+    background-image: url("../public/fall.jpg");
+}
+
+.winter {
+    background-image: url("../public/winter.jpg");
+}
