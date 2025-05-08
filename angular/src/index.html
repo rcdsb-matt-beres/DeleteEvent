@@ -119,14 +119,23 @@
 
 
     function deleteEvent() {
+      currEvent = document.getElementById("events").value
       const request = gapi.client.calendar.events.delete({
         calendarId: 'c_f049b179cd81305d0df146197f30755153a65542312c9c86ad719559138b61c6@group.calendar.google.com',
-        eventId: document.getElementById("events").value,
+        eventId: currEvent,
       })
       request.execute(function (event) {
-        console.log('Event deleted: ' + document.getElementById("events").value);
+        console.log('Event deleted: ' + currEvent);
       });
-    };
+      const eventsSelect = document.getElementById('events');
+      eventsSelect.innerHTML = ''; // Clear existing options
+      const option = document.createElement('option');
+      option.textContent = "Loading..."; // Use the event summary or a fallback
+      eventsSelect.appendChild(option);
+      setTimeout(function () {
+        getEvents();
+      }, 2000);
+    }
 
   </script>
   <script>
