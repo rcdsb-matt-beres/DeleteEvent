@@ -121,7 +121,7 @@
     function deleteEvent() {
       currEvent = document.getElementById("events").value
       const request = gapi.client.calendar.events.delete({
-        calendarId: 'c_f049b179cd81305d0df146197f30755153a65542312c9c86ad719559138b61c6@group.calendar.google.com',
+        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
         eventId: currEvent,
       })
       request.execute(function (event) {
@@ -174,7 +174,7 @@
 
 
       const request = gapi.client.calendar.events.list({
-        calendarId: 'c_f049b179cd81305d0df146197f30755153a65542312c9c86ad719559138b61c6@group.calendar.google.com',
+        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
         singleEvents: true,
         orderBy: "startTime",
         timeMin: start,
