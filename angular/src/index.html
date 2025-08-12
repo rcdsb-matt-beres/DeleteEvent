@@ -10,34 +10,114 @@
 </head>
 
 <body>
+  <!-- I am terribly sorry to anyone who has to see this, this is not my proudest website but at least it's functional... -->
   <app-root></app-root>
   <a href="https://rcdsb-matt-beres.github.io/Chart-Website/" class="back">← Back</a>
 
   <h1>Delete Event</h1>
 
   <div class="grid">
-
     <select id="events">
       <option>Loading...</option>
     </select>
-
   </div>
 
-
   <button id="authorize_button" onclick="handleAuthClick()">Submit</button>
-
-
-
 
   <pre id="content" style="white-space: pre-wrap;"></pre>
 
   <script type="text/javascript">
+    // Start calling the functions after the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      getSeason();
+    });
+
+    // This function determines what background should appear based on the current month
+    function getSeason() {
+      const body = document.body;
+      let checkDate = new Date();
+      let currMonth = checkDate.getMonth() + 1;
+
+      // Remove any existing season class
+      body.classList.remove('winter', 'spring', 'summer', 'fall');
+      // Determine the current season and set it as the class of the body
+      if (currMonth == 12 || currMonth <= 2) {
+        body.classList.add('winter');
+      } else if (currMonth >= 3 && currMonth <= 5) {
+        body.classList.add('spring');
+      } else if (currMonth >= 6 && currMonth <= 8) {
+        body.classList.add('summer');
+      } else if (currMonth >= 9 && currMonth <= 11) {
+        body.classList.add('fall');
+      }
+    }
+
+    // This gets called in initializeGapiClient(), retrieves all event objects for today and puts them in the dropdown
+    function getEvents() {
+      today = new Date();
+      currMonth = today.getMonth() + 1;
+      start = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T00:00:00-04:00'
+      end = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T23:59:00-04:00'
+
+      //Build API request
+      const request = gapi.client.calendar.events.list({
+        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
+        singleEvents: true,
+        orderBy: "startTime",
+        timeMin: start,
+        timeMax: end
+      })
+
+      //Execute API request
+      request.execute(function (event) {
+        const eventsSelect = document.getElementById('events');
+        eventsSelect.innerHTML = ''; // Clear existing options
+
+        //Populate the dropdown with event options
+        if (event.items && event.items.length > 0) {
+          event.items.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item.id; // Use the event ID as the value
+            option.textContent = item.summary || 'No Title'; // Use the event summary or a fallback
+            eventsSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement('option');
+          option.textContent = 'No events found';
+          eventsSelect.appendChild(option);
+        }
+      });
+
+    }
+
+    // This function deletes the selected event from the dropdown, then refreshes the dropdown
+    function deleteEvent() {
+      currEvent = document.getElementById("events").value
+      const request = gapi.client.calendar.events.delete({
+        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
+        eventId: currEvent,
+      })
+      request.execute(function (event) {
+        console.log('Event deleted: ' + currEvent);
+      });
+      const eventsSelect = document.getElementById('events');
+      eventsSelect.innerHTML = ''; // Clear existing options
+      const option = document.createElement('option');
+      option.textContent = "Loading..."; // Use the event summary or a fallback
+      eventsSelect.appendChild(option);
+      setTimeout(function () {
+        getEvents();
+      }, 2000);
+    }
+
+    //*******Stole all this gapi stuff from the internet to get the API to work... All lines 115 to 200 are essentially magic*******
+
     /* exported gapiLoaded */
     /* exported gisLoaded */
     /* exported handleAuthClick */
     /* exported handleSignoutClick */
 
-    // TODO(developer): Set to client ID and API key from the Developer Console
+    // In theory I should hide these but honestly who cares, also not sure how to do it on pages lmfao, .env wasn't working so I gave up
     const CLIENT_ID = '867495649327-osufd5ti5dnkjan5ea7krse983r776t3.apps.googleusercontent.com';
     const API_KEY = 'AIzaSyDi7hRaUZ5OdAyVQdwRdxf-EJro2igCp2Q';
 
@@ -114,90 +194,6 @@
         // Skip display of account chooser and consent dialog for an existing session.
         tokenClient.requestAccessToken({ prompt: '' });
       }
-    }
-
-
-
-    function deleteEvent() {
-      currEvent = document.getElementById("events").value
-      const request = gapi.client.calendar.events.delete({
-        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
-        eventId: currEvent,
-      })
-      request.execute(function (event) {
-        console.log('Event deleted: ' + currEvent);
-      });
-      const eventsSelect = document.getElementById('events');
-      eventsSelect.innerHTML = ''; // Clear existing options
-      const option = document.createElement('option');
-      option.textContent = "Loading..."; // Use the event summary or a fallback
-      eventsSelect.appendChild(option);
-      setTimeout(function () {
-        getEvents();
-      }, 2000);
-    }
-
-  </script>
-  <script>
-    // Call the function after the DOM is fully loaded
-
-    document.addEventListener('DOMContentLoaded', () => {
-      getSeason();
-    });
-
-
-    checkDate = new Date();
-    currMonth = checkDate.getMonth() + 1;
-
-    function getSeason() {
-      const body = document.body;
-
-      // Remove any existing season class
-      body.classList.remove('winter', 'spring', 'summer', 'fall');
-      // Determine the current season and set it as the class of the body
-      if (this.currMonth == 12 || this.currMonth <= 2) {
-        body.classList.add('winter');
-      } else if (this.currMonth >= 3 && this.currMonth <= 5) {
-        body.classList.add('spring');
-      } else if (this.currMonth >= 6 && this.currMonth <= 8) {
-        body.classList.add('summer');
-      } else if (this.currMonth >= 9 && this.currMonth <= 11) {
-        body.classList.add('fall');
-      }
-    }
-
-    function getEvents() {
-      today = new Date();
-      currMonth = today.getMonth() + 1;
-      start = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T00:00:00-04:00'
-      end = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T23:59:00-04:00'
-
-
-      const request = gapi.client.calendar.events.list({
-        calendarId: 'c_a45d8e966d0c7524b6f84ea21df86b3d87f3575b107347c56451886b52f8a83a@group.calendar.google.com',
-        singleEvents: true,
-        orderBy: "startTime",
-        timeMin: start,
-        timeMax: end
-      })
-      request.execute(function (event) {
-        const eventsSelect = document.getElementById('events');
-        eventsSelect.innerHTML = ''; // Clear existing options
-
-        if (event.items && event.items.length > 0) {
-          event.items.forEach((item) => {
-            const option = document.createElement('option');
-            option.value = item.id; // Use the event ID as the value
-            option.textContent = item.summary || 'No Title'; // Use the event summary or a fallback
-            eventsSelect.appendChild(option);
-          });
-        } else {
-          const option = document.createElement('option');
-          option.textContent = 'No events found';
-          eventsSelect.appendChild(option);
-        }
-      });
-
     }
   </script>
   <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
