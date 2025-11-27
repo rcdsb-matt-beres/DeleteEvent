@@ -41,7 +41,9 @@
       // Remove any existing season class
       body.classList.remove('winter', 'spring', 'summer', 'fall');
       // Determine the current season and set it as the class of the body
-      if (currMonth == 12 || currMonth <= 2) {
+      if (currMonth == 12) {
+        body.classList.add('christmas');
+      } else if (currMonth <= 2) {
         body.classList.add('winter');
       } else if (currMonth >= 3 && currMonth <= 5) {
         body.classList.add('spring');
