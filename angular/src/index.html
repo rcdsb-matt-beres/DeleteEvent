@@ -71,8 +71,9 @@
     function getEvents() {
       today = new Date();
       currMonth = today.getMonth() + 1;
-      start = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T00:00:00-04:00'
-      end = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T23:59:00-04:00'
+      offset = new Date().getTimezoneOffset() == 300 ? '-05:00' : '-04:00';
+      start = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T00:00:00' + offset;
+      end = today.getFullYear() + "-" + currMonth + "-" + today.getDate() + 'T23:59:59' + offset;
 
       //Build API request
       const request = gapi.client.calendar.events.list({
