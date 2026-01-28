@@ -44,7 +44,11 @@
       if (currMonth == 12) {
         body.classList.add('christmas');
       } else if (currMonth <= 2) {
-        body.classList.add('winter');
+        if (currMonth == 2 && checkDate.getDate() <= 14) {
+          body.classList.add("valentines");
+        } else {
+          body.classList.add('winter');
+        }
       } else if (currMonth >= 3 && currMonth <= 5) {
         body.classList.add('spring');
       } else if (currMonth >= 6 && currMonth <= 8) {

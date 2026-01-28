@@ -82,3 +82,7 @@ button {
 .christmas {
     background-image: url("../public/christmas.jpg");
 }
+
+.valentines {
+    background-image: url("../public/valentines.png");
+}
