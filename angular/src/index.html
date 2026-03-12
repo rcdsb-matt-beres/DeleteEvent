@@ -50,7 +50,11 @@
           body.classList.add('winter');
         }
       } else if (currMonth >= 3 && currMonth <= 5) {
-        body.classList.add('spring');
+        if (currMonth == 3 && checkDate.getDate() >= 10 && checkDate.getDate() <= 17) {
+          body.classList.add("st-patricks-day");
+        } else {
+          body.classList.add('spring');
+        }
       } else if (currMonth >= 6 && currMonth <= 8) {
         body.classList.add('summer');
       } else if (currMonth >= 9 && currMonth <= 11) {

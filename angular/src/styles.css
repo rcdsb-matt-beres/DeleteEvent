@@ -86,3 +86,7 @@ button {
 .valentines {
     background-image: url("../public/valentines.png");
 }
+
+.st-patricks-day {
+    background-image: url("../public/st-patricks-day.jpg");
+}
